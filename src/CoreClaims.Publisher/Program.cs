@@ -37,19 +37,21 @@ namespace CoreClaims.Publisher
             config.GetSection(nameof(GeneratorOptions))
                 .Bind(options);
 
-            if (string.IsNullOrEmpty(config[Constants.Connections.EventHubNamespace]))
+            var eventHubNamespace = config[Constants.Connections.EventHubNamespace];
+            if (string.IsNullOrEmpty(eventHubNamespace))
             {
                 Console.Error.WriteLine($"Missing config value: {Constants.Connections.EventHubNamespace}");
                 return;
             }
 
-            if (string.IsNullOrEmpty(config[Constants.Connections.CosmosDbEndpoint]))
+            var cosmosDbEndpoint = config[Constants.Connections.CosmosDbEndpoint];
+            if (string.IsNullOrEmpty(cosmosDbEndpoint))
             {
-                Console.Error.WriteLine($"Missing config value: {Constants.Connections.EventHubNamespace}");
+                Console.Error.WriteLine($"Missing config value: {Constants.Connections.CosmosDbEndpoint}");
                 return;
             }
             
-            var client = new CosmosClientBuilder(config[Constants.Connections.CosmosDbEndpoint])
+            var client = new CosmosClientBuilder(cosmosDbEndpoint)
                 .Build();
 
             Console.WriteLine("Loading Members...");
@@ -67,7 +69,7 @@ namespace CoreClaims.Publisher
             Console.WriteLine("Loading Procedures...");
             var claimProcedures = await new ClaimProcedureRepository(client).ListClaimProcedures();
 
-            var eventHub = new EventHubService(config[Constants.Connections.EventHubNamespace]);
+            var eventHub = new EventHubService(eventHubNamespace);
             var generator = new DataGenerator(memberIds, payerIds, providerIds, claimProcedures.Items.ToList());
 
             if (options.RunMode == GeneratorOptions.RunModeOption.Continuous)

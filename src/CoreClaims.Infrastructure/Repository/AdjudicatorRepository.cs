@@ -15,7 +15,7 @@ namespace CoreClaims.Infrastructure.Repository
         public async Task<IPageResult<ClaimHeader>> GetAssignedClaims(string adjudicatorId,
             int offset = 0,
             int limit = Constants.DefaultPageSize,
-            string sortColumn = Constants.DefaultSortColumn,
+            string? sortColumn = Constants.DefaultSortColumn,
             string sortDirection = "asc")
         {
             sortColumn ??= Constants.DefaultSortColumn;
@@ -47,7 +47,7 @@ namespace CoreClaims.Infrastructure.Repository
         }
 
 
-        public async Task<Adjudicator> GetRandomAdjudicator(string role = "Adjudicator", int offset = 0, int limit = Constants.DefaultPageSize)
+        public async Task<Adjudicator?> GetRandomAdjudicator(string role = "Adjudicator", int offset = 0, int limit = Constants.DefaultPageSize)
         {
             var query = new QueryDefinition("SELECT * FROM a WHERE a.role = @role AND a.type = 'Adjudicator' OFFSET @offset LIMIT @limit")
                 .WithParameter("@role", role)
@@ -64,12 +64,12 @@ namespace CoreClaims.Infrastructure.Repository
             return null;
         }
 
-        public Task<Adjudicator> GetAdjudicator(string adjudicatorId)
+        public Task<Adjudicator?> GetAdjudicator(string adjudicatorId)
         {
             return ReadItem<Adjudicator>(adjudicatorId, adjudicatorId);
         }
 
-        public Task<ClaimHeader> GetAdjudicatorClaim(string adjudicatorId, string id)
+        public Task<ClaimHeader?> GetAdjudicatorClaim(string adjudicatorId, string id)
         {
             return ReadItem<ClaimHeader>(adjudicatorId, id);
         }

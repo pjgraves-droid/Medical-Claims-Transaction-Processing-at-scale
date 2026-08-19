@@ -8,10 +8,10 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public int LineItemNo { get; set; }
 
         [JsonProperty("procedureCode")]
-        public string ProcedureCode { get; set; }
+        public string ProcedureCode { get; set; } = null!;
 
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         [JsonProperty("amount")]
         public decimal Amount { get; set; }

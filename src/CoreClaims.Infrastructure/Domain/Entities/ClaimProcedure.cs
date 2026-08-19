@@ -15,12 +15,12 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public override string Id => Code;
 
         [JsonProperty("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
 
         [JsonProperty("category")]
-        public string Category { get; set; }
+        public string Category { get; set; } = null!;
 
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
     }
 }

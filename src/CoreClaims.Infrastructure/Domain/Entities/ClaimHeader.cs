@@ -38,25 +38,25 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public override string Id => $"claim:{ClaimId}";
 
         [JsonProperty("claimId")]
-        public string ClaimId { get; set; }
+        public string ClaimId { get; set; } = null!;
 
         [JsonProperty("memberId")]
-        public string MemberId { get; set; }
+        public string? MemberId { get; set; }
 
         [JsonProperty("payerId")]
-        public string PayerId { get; set; }
+        public string PayerId { get; set; } = null!;
 
         [JsonProperty("payerName")]
-        public string PayerName { get; set; }
+        public string? PayerName { get; set; }
 
         [JsonProperty("providerId")]
-        public string ProviderId { get; set; }
+        public string ProviderId { get; set; } = null!;
 
         [JsonProperty("providerName")]
-        public string ProviderName { get; set; }
+        public string? ProviderName { get; set; }
 
         [JsonProperty("adjudicatorId")]
-        public string AdjudicatorId { get; set; }
+        public string? AdjudicatorId { get; set; }
 
         [JsonProperty("claimStatus")]
         [JsonConverter(typeof(StringEnumConverter))]

@@ -14,7 +14,7 @@ namespace CoreClaims.Infrastructure.Repository
         {
         }
 
-        public async Task<ClaimDetail> GetClaim(string claimId, int? adjustmentId = null)
+        public async Task<ClaimDetail?> GetClaim(string claimId, int? adjustmentId = null)
         {
             if (adjustmentId == null)
             {
@@ -27,7 +27,7 @@ namespace CoreClaims.Infrastructure.Repository
             return await ReadItem<ClaimDetail>(claimId, $"claim:{claimId}:{adjustmentId}");
         }
 
-        public Task<ClaimHeader> GetClaimHeader(string claimId)
+        public Task<ClaimHeader?> GetClaimHeader(string claimId)
         {
             return ReadItem<ClaimHeader>(claimId, $"claim:{claimId}");
         }
@@ -99,14 +99,14 @@ namespace CoreClaims.Infrastructure.Repository
             }
         }
 
-        public async Task<(ClaimHeader, IEnumerable<ClaimDetail>)> GetClaimHistory(string claimId)
+        public async Task<(ClaimHeader? Header, IEnumerable<ClaimDetail> Details)> GetClaimHistory(string claimId)
         {
             var query = new QueryDefinition("SELECT * FROM c WHERE c.claimId = @claimId ORDER BY c.modifiedOn DESC")
                 .WithParameter("@claimId", claimId);
 
             var results = await Query<JObject>(query, new PartitionKey(claimId));
 
-            ClaimHeader header = null;
+            ClaimHeader? header = null;
             var details = new List<ClaimDetail>();
 
             foreach (var row in results)

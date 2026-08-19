@@ -35,7 +35,7 @@ namespace CoreClaims.Infrastructure.Repository
             return resultList;
         }
 
-        protected async Task<TEntity> ReadItem<TEntity>(string partitionKey, string itemId) where TEntity : BaseEntity
+        protected async Task<TEntity?> ReadItem<TEntity>(string partitionKey, string itemId) where TEntity : BaseEntity
         {
             try
             {

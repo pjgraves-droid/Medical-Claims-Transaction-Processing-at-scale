@@ -12,7 +12,7 @@ namespace CoreClaims.Infrastructure.Repository
         }
 
         public async Task<IPageResult<Provider>> ListProviders(int offset = 0, int limit = Constants.DefaultPageSize,
-            string sortColumn = Constants.DefaultSortColumn,
+            string? sortColumn = Constants.DefaultSortColumn,
             string sortDirection = "asc")
         {
             sortColumn ??= Constants.DefaultSortColumn;
@@ -33,7 +33,7 @@ namespace CoreClaims.Infrastructure.Repository
             return new PageResult<Provider>(count, offset, limit, result);
         }
 
-        public Task<Provider> GetProvider(string providerId)
+        public Task<Provider?> GetProvider(string providerId)
         {
             return ReadItem<Provider>(providerId, providerId);
         }

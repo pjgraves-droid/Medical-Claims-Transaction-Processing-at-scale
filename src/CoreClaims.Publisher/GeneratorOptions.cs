@@ -19,7 +19,7 @@ namespace CoreClaims.Publisher
 
         public int BatchSize { get; set; } = 10;
 
-        public string ClaimId { get; set; }
+        public string? ClaimId { get; set; }
 
         public int SleepTime { get; set; } = 10000;
 

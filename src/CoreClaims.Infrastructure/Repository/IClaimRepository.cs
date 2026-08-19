@@ -5,9 +5,9 @@ namespace CoreClaims.Infrastructure.Repository
 {
     public interface IClaimRepository
     {
-        Task<ClaimDetail> GetClaim(string claimId, int? adjustmentId = null);
+        Task<ClaimDetail?> GetClaim(string claimId, int? adjustmentId = null);
 
-        Task<ClaimHeader> GetClaimHeader(string claimId);
+        Task<ClaimHeader?> GetClaimHeader(string claimId);
 
         Task<IPageResult<ClaimDetail>> GetClaimDetails(string claimId, int offset = 0, int limit = Constants.DefaultPageSize);
 
@@ -15,6 +15,6 @@ namespace CoreClaims.Infrastructure.Repository
 
         Task<ClaimHeader> UpdateClaim(ClaimDetail detail);
 
-        Task<(ClaimHeader, IEnumerable<ClaimDetail>)> GetClaimHistory(string claimId);
+        Task<(ClaimHeader? Header, IEnumerable<ClaimDetail> Details)> GetClaimHistory(string claimId);
     }
 }
