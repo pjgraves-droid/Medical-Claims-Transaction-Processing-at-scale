@@ -33,7 +33,7 @@ namespace CoreClaims.Infrastructure.Repository
             return new PageResult<Provider>(count, offset, limit, result);
         }
 
-        public Task<Provider> GetProvider(string providerId)
+        public Task<Provider?> GetProvider(string providerId)
         {
             return ReadItem<Provider>(providerId, providerId);
         }

@@ -9,6 +9,6 @@ namespace CoreClaims.Infrastructure.Repository
             string sortColumn = "_ts",
             string sortDirection = "asc");
 
-        Task<Payer> GetPayer(string payerId);
+        Task<Payer?> GetPayer(string payerId);
     }
 }

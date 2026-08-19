@@ -15,27 +15,27 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public override string Id => ProviderId;
 
         [JsonProperty("providerId")]
-        public string ProviderId { get; set; }
+        public string ProviderId { get; set; } = null!;
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonProperty("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [JsonProperty("phoneNumber")]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = null!;
 
         [JsonProperty("address")]
-        public string Address { get; set; }
+        public string Address { get; set; } = null!;
 
         [JsonProperty("city")]
-        public string City { get; set; }
+        public string City { get; set; } = null!;
 
         [JsonProperty("state")]
-        public string State { get; set; }
+        public string State { get; set; } = null!;
 
         [JsonProperty("country")]
-        public string Country { get; set; }
+        public string Country { get; set; } = null!;
     }
 }

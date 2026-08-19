@@ -16,13 +16,13 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public override string Id => AdjudicatorId;
 
         [JsonProperty("adjudicatorId")]
-        public string AdjudicatorId { get; set; }
+        public string AdjudicatorId { get; set; } = null!;
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonProperty("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [JsonProperty("role")]
         public AdjudicatorRole Role { get; set; }

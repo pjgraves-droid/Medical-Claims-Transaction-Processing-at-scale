@@ -19,6 +19,6 @@ namespace CoreClaims.Infrastructure.Repository
 
         Task UpsertClaim(ClaimHeader claim);
 
-        Task<Member> Get(string memberId);
+        Task<Member?> Get(string memberId);
     }
 }

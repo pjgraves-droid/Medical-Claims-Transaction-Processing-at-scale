@@ -134,7 +134,7 @@ namespace CoreClaims.Infrastructure.Repository
             await Container.UpsertItemAsync(claim);
         }
 
-        public async Task<Member> Get(string memberId)
+        public async Task<Member?> Get(string memberId)
         {
             var response = await ReadItem<Member>(memberId, memberId);
             return response;

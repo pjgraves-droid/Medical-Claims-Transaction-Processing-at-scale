@@ -8,10 +8,10 @@ namespace CoreClaims.Publisher.Model
     public class CreateClaim
     {
         [JsonProperty("claimId")]
-        public string ClaimId { get; set; }
+        public string ClaimId { get; set; } = null!;
 
         [JsonProperty("memberId")]
-        public string MemberId { get; set; }
+        public string? MemberId { get; set; }
 
         [JsonProperty("adjustmentId")]
         public int AdjustmentId { get; internal set; }
@@ -21,18 +21,18 @@ namespace CoreClaims.Publisher.Model
         public ClaimStatus ClaimStatus { get; set; }
 
         [JsonProperty("adjudicatorId")]
-        public string AdjudicatorId { get; set; }
+        public string? AdjudicatorId { get; set; }
 
         [JsonProperty("payerId")]
-        public string PayerId { get; set; }
+        public string PayerId { get; set; } = null!;
 
         [JsonProperty("providerId")]
-        public string ProviderId { get; set; }
+        public string ProviderId { get; set; } = null!;
 
         [JsonProperty("filingDate")]
         public DateTime FilingDate { get; set; }
 
         [JsonProperty("lineItems")]
-        public IEnumerable<LineItem> LineItems { get; set; }
+        public IEnumerable<LineItem> LineItems { get; set; } = null!;
     }
 }

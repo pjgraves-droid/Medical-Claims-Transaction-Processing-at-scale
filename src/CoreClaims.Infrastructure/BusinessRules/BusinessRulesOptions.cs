@@ -15,7 +15,7 @@ namespace CoreClaims.Infrastructure.BusinessRules
         /// to override automatic assignments.
         /// </summary>
         public bool DemoMode { get; set; } = true;
-        public string DemoAdjudicatorId { get; set; }
-        public string DemoManagerAdjudicatorId { get; set; }
+        public string? DemoAdjudicatorId { get; set; }
+        public string? DemoManagerAdjudicatorId { get; set; }
     }
 }

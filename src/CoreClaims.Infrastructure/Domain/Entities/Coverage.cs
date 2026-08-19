@@ -15,10 +15,10 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public override string Id => $"coverage:{CoverageId}";
 
         [JsonProperty("coverageId")]
-        public string CoverageId { get; set; }
+        public string CoverageId { get; set; } = null!;
 
         [JsonProperty("memberId")]
-        public string MemberId { get; set; }
+        public string MemberId { get; set; } = null!;
 
         [JsonProperty("startDate")]
         public DateTime StartDate { get; set; }
@@ -27,6 +27,6 @@ namespace CoreClaims.Infrastructure.Domain.Entities
         public DateTime EndDate { get; set; }
 
         [JsonProperty("payerId")]
-        public string PayerId { get; set; }
+        public string PayerId { get; set; } = null!;
     }
 }

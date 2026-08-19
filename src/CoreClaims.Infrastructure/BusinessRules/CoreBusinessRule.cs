@@ -54,7 +54,7 @@ namespace CoreClaims.Infrastructure.BusinessRules
             // Select random adjudicator.
             if (string.IsNullOrEmpty(claim.AdjudicatorId))
             {
-                Adjudicator adjudicator;
+                Adjudicator? adjudicator;
                 if (_options.Value.DemoMode)
                 {
                     var demoAdjudicatorId = _options.Value.DemoAdjudicatorId;
@@ -100,6 +100,11 @@ namespace CoreClaims.Infrastructure.BusinessRules
 
         public async Task<(ClaimDetail, bool)> AdjudicateClaim(ClaimDetail claim)
         {
+            if (string.IsNullOrEmpty(claim.AdjudicatorId))
+            {
+                throw new ArgumentException("Claim must have an adjudicator before it can be adjudicated.", nameof(claim));
+            }
+
             var adjudicator = await _adjudicatorRepository.GetAdjudicator(claim.AdjudicatorId);
             var adjudicatorChanged = false;
 
@@ -121,7 +126,7 @@ namespace CoreClaims.Infrastructure.BusinessRules
                 }
             }
 
-            Adjudicator manager;
+            Adjudicator? manager;
             if (_options.Value.DemoMode && !string.IsNullOrWhiteSpace(_options.Value.DemoManagerAdjudicatorId))
             {
                 manager = await _adjudicatorRepository.GetAdjudicator(_options.Value.DemoManagerAdjudicatorId) ?? await _adjudicatorRepository.GetRandomAdjudicator("Manager");

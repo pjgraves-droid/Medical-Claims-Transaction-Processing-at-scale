@@ -33,7 +33,7 @@ namespace CoreClaims.Infrastructure.Repository
             return new PageResult<Payer>(count, offset, limit, result);
         }
 
-        public Task<Payer> GetPayer(string payerId)
+        public Task<Payer?> GetPayer(string payerId)
         {
             return ReadItem<Payer>(payerId, payerId);
         }

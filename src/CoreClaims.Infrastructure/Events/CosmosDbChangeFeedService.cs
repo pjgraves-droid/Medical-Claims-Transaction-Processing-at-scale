@@ -23,9 +23,9 @@ namespace CoreClaims.Infrastructure.Events
         private readonly Container _leases;
         private readonly Container _claim;
 
-        private ChangeFeedProcessor _changeFeedProcessorAssignClaimAdjudicator;
-        private ChangeFeedProcessor _changeFeedProcessorClaimComplete;
-        private ChangeFeedProcessor _changeFeedProcessorAssignClaimUpdated;
+        private ChangeFeedProcessor? _changeFeedProcessorAssignClaimAdjudicator;
+        private ChangeFeedProcessor? _changeFeedProcessorClaimComplete;
+        private ChangeFeedProcessor? _changeFeedProcessorAssignClaimUpdated;
 
         private readonly ILogger<CosmosDbChangeFeedService> _logger;
         private readonly IClaimRepository _claimRepository;
@@ -182,7 +182,10 @@ namespace CoreClaims.Infrastructure.Events
                     {
                         case ClaimStatus.Approved:
                             //TODO: Consider moving to workflow ChangeFeed
-                            await _memberRepository.IncrementMemberTotals(claim.MemberId, 1, claim.TotalAmount);
+                            if (!string.IsNullOrEmpty(claim.MemberId))
+                            {
+                                await _memberRepository.IncrementMemberTotals(claim.MemberId, 1, claim.TotalAmount);
+                            }
                             await _eventHub.TriggerEventAsync(claim, Constants.EventHubTopics.Approved);
                             break;
                         case ClaimStatus.Denied:
