@@ -5,10 +5,15 @@
 replicaCount: 1
 serviceAccountName: claims-worker-sa
 image:
-  repository: bhm7vnpxv6irqcr.azurecr.io/chatservicewebapi
-  pullPolicy: Always
+  # Must be set to this project's own claims-worker image, e.g.
+  # <your-registry>.azurecr.io/claims-worker. There is intentionally no default:
+  # rendering the chart fails unless the repository is supplied explicitly.
+  repository: ""
+  pullPolicy: IfNotPresent
+  # Preferred: pin an immutable digest (sha256:...). When set, the tag is ignored.
+  digest: ""
   # Overrides the image tag whose default is the chart appVersion.
-  tag: latest
+  tag: ""
 
 service:
   type: ClusterIP
