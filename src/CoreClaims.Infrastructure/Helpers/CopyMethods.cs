@@ -12,7 +12,8 @@ namespace CoreClaims.Infrastructure.Helpers
         public static T DeepCopyJson<T>(T input)
         {
             var jsonString = JsonSerializer.Serialize(input);
-            return JsonSerializer.Deserialize<T>(jsonString)!;
+            return JsonSerializer.Deserialize<T>(jsonString)
+                ?? throw new JsonException("Unable to deserialize the copied value.");
         }
     }
 }
