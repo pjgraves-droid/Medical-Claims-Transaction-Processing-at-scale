@@ -19,7 +19,7 @@ namespace CoreClaims.Infrastructure.Repository
             DateTime? startDate = null,
             DateTime? endDate = null,
             bool includeDenied = false,
-            string sortColumn = Constants.DefaultSortColumn,
+            string? sortColumn = Constants.DefaultSortColumn,
             string sortDirection = "asc")
         {
             sortColumn ??= Constants.DefaultSortColumn;
@@ -94,7 +94,7 @@ namespace CoreClaims.Infrastructure.Repository
         }
 
         public async Task<IPageResult<Member>> ListMembers(int offset = 0, int limit = Constants.DefaultPageSize,
-            string sortColumn = Constants.DefaultSortColumn,
+            string? sortColumn = Constants.DefaultSortColumn,
             string sortDirection = "asc")
         {
             sortColumn ??= Constants.DefaultSortColumn;

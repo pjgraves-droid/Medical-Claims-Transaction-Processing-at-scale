@@ -15,7 +15,7 @@ namespace CoreClaims.Infrastructure.Repository
         public async Task<IPageResult<ClaimHeader>> GetAssignedClaims(string adjudicatorId,
             int offset = 0,
             int limit = Constants.DefaultPageSize,
-            string sortColumn = Constants.DefaultSortColumn,
+            string? sortColumn = Constants.DefaultSortColumn,
             string sortDirection = "asc")
         {
             sortColumn ??= Constants.DefaultSortColumn;
