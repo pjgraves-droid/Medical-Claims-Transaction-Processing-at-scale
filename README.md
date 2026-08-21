@@ -193,6 +193,24 @@ Browse to the URL copied in the previous step to access the web app.
 1. `CTRL + C` to stop Publisher app (if running in Continuous mode)
 2. Delete the Resource Group to destroy all resources
 
+## Testing
+
+Run the backend tests and collect cross-platform coverage:
+
+```bash
+export PATH="$HOME/.dotnet:$PATH"
+dotnet test src/CoreClaims.sln --collect:"XPlat Code Coverage"
+```
+
+Run the frontend tests and coverage from the UI project:
+
+```bash
+cd ui/medical-claims-ui
+npm install
+npm test
+npm run test:coverage
+```
+
 ## How to Contribute
 
 If you find any errors or have suggestions for changes, please be part of this project!
