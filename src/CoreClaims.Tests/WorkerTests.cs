@@ -118,6 +118,19 @@ public class WorkerTests
     }
 
     [Fact]
+    public async Task AdjudicatorChangedWorker_LeavesMissingClaimAlone()
+    {
+        var adjudicators = new Mock<IAdjudicatorRepository>();
+        var proposed = new ClaimHeader { ClaimId = "claim", AdjudicatorId = "old" };
+        adjudicators.Setup(x => x.GetAdjudicatorClaim("old", proposed.Id)).ReturnsAsync((ClaimHeader)null);
+        var worker = new ChangedWorker(new Mock<ILogger<EventHubWorkerAdjudicatorChanged>>().Object,
+            new Mock<IEventHubService>().Object, adjudicators.Object);
+
+        await worker.Process(JsonSerializationHelper.SerializeItem(proposed));
+        adjudicators.Verify(x => x.DeleteAdjudicatorClaim(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
     public async Task ChangeFeedWorker_StartsConfiguredProcessor()
     {
         var service = new Mock<ICosmosDbChangeFeedService>();
