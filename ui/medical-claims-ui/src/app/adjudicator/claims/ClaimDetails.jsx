@@ -2,9 +2,8 @@
 
 import react, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import moment from 'moment';
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import { FormatMoney } from '../../hooks/Formatters';
+import { FormatMoney, FormatDateAs } from '../../hooks/Formatters';
 
 import { Table, Spinner, Pagination, Modal, Textarea, Button } from 'flowbite-react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
@@ -31,7 +30,7 @@ export default function ClaimDetails({ claimId, requestClaims, isManager, setCha
 			<div className="card shadow-md">
 				<div className="card-header grid grid-cols-2">
 					<h4 className="card-title mb-2">Claim Details</h4>
-					<div className="text-right"><label>Filing Date: </label>{ moment(data.filingDate).format('MMMM DD, YYYY') }</div>
+					<div className="text-right"><label>Filing Date: </label>{ FormatDateAs(data.filingDate, 'MMMM dd, yyyy') }</div>
 					<div className="justify-end">
 						<Button color="dark" className="p-0" onClick={onClickRecommend}>
 							<SparklesIcon className="h-6 w-6 text-gray-500 mr-3 text-white" />
@@ -167,7 +166,7 @@ function ClaimsActions({ claimStatus, claimId, requestClaims, lineItems, mutate,
 function formatValues(header, value, row) {
 	switch(header.key) {
 		case 'serviceDate':
-			return moment(value).format('YYYY-MM-DD');
+			return FormatDateAs(value, 'yyyy-MM-dd');
 			break;
 		case 'amount':
 		case 'discount':
