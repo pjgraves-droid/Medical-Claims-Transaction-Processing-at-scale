@@ -1,8 +1,8 @@
 ﻿using CoreClaims.Infrastructure.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Text.Json;
-using System.Transactions;
 
 namespace CoreClaims.SemanticKernel
 {
@@ -18,16 +18,12 @@ namespace CoreClaims.SemanticKernel
 
         public async Task<string> ReviewClaim(ClaimDetail claim)
         {
-            await Task.CompletedTask;
-
-            var builder = new KernelBuilder();
-
-            builder.WithAzureChatCompletionService(
-                     _settings.OpenAICompletionsDeployment,
-                     _settings.OpenAIEndpoint,
-                     _settings.OpenAIKey);
-
-            var kernel = builder.Build();
+            var kernel = Kernel.CreateBuilder()
+                .AddAzureOpenAIChatCompletion(
+                    _settings.OpenAICompletionsDeployment,
+                    _settings.OpenAIEndpoint,
+                    _settings.OpenAIKey)
+                .Build();
 
             string skPrompt = @"
             You are an insurance claim review agent. You are provided data about a claim in JSON format and rules to evaluate the claim and classify it with a review result. 
@@ -124,7 +120,11 @@ namespace CoreClaims.SemanticKernel
                 [Your Review Result Reasoning]
             ";
 
-            var reviewer = kernel.CreateSemanticFunction(skPrompt, "review", "ReviewSkill", description: "Review the claim and make approval or denial recommendation.", maxTokens: 2000, temperature: 0.0);
+            var reviewer = kernel.CreateFunctionFromPrompt(
+                skPrompt,
+                new OpenAIPromptExecutionSettings { MaxTokens = 2000, Temperature = 0.0 },
+                functionName: "review",
+                description: "Review the claim and make approval or denial recommendation.");
 
             JsonSerializerOptions ser_options = new()
             {
@@ -137,22 +137,17 @@ namespace CoreClaims.SemanticKernel
 
             string claimData = JsonSerializer.Serialize(claim, ser_options);
 
-            var context = kernel.CreateNewContext();
-            context["claim"] = claimData;
+            var arguments = new KernelArguments { ["claim"] = claimData };
 
-            var response = await reviewer.InvokeAsync(context);
-
-            string result;
-            if (response.ErrorOccurred)
+            try
             {
-                result = response.LastException.ToString();
+                var response = await kernel.InvokeAsync(reviewer, arguments);
+                return response.ToString();
             }
-            else
+            catch (Exception ex)
             {
-                result = response.Result;
+                return ex.ToString();
             }
-
-            return result;
         }
     }
 }

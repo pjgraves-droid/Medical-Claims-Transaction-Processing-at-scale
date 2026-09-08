@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-import moment from 'moment';
 
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import { FormatMoney } from '../../hooks/Formatters';
+import { FormatMoney, FormatDateAs } from '../../hooks/Formatters';
 import { Spinner } from 'flowbite-react';
 import DataTable from '../../components/DataTable';
 
@@ -19,7 +18,7 @@ const tableHeaders = [
 function formatValues(header, value, row) {
 	switch(header.key) {
 		case 'serviceDate':
-			return moment(value).format('YYYY-MM-DD');
+			return FormatDateAs(value, 'yyyy-MM-dd');
 			break;
 		case 'amount':
 			return FormatMoney(value);
@@ -40,7 +39,7 @@ export default function ClaimDetails({ claimId }) {
 			<div className="card mt-10 shadow-md">
 				<div className="card-header grid grid-cols-2">
 					<h4 className="card-title">Claim Details</h4>
-					<div className="text-right"><label>Filing Date: </label>{ moment(data.filingDate).format('MMMM DD, YYYY') }</div>
+					<div className="text-right"><label>Filing Date: </label>{ FormatDateAs(data.filingDate, 'MMMM dd, yyyy') }</div>
 				</div>
 				<div className="card-body">
 					<div className="relative overflow-x-auto sm:rounded">

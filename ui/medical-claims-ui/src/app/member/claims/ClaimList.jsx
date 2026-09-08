@@ -1,12 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import link from 'next/link';
-import moment from 'moment';
 
 import { Table } from 'flowbite-react';
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import scrollToElement from '../../hooks/scrollToElement';
-import { FormatMoney } from '../../hooks/Formatters';
+import scrollToElement from '../../hooks/ScrollToElement';
+import { FormatMoney, FormatDateAs } from '../../hooks/Formatters';
 import ClaimDetails from './ClaimDetails';
 import ClaimHistory from './ClaimHistory';
 import DataTable from '../../components/DataTable';
@@ -24,10 +23,10 @@ const tableHeaders = [
 function formatValues(header, value, row) {
 	switch(header.key) {
 		case 'filingDate':
-			return moment(value).format('YYYY-MM-DD');
+			return FormatDateAs(value, 'yyyy-MM-dd');
 			break;		
 		case 'lastAdjudicatedDate':
-			return value ? moment(value).format('YYYY-MM-DD hh:mm a') : '-';
+			return value ? FormatDateAs(value, 'yyyy-MM-dd hh:mm aaa') : '-';
 			break;
 		case 'lastAmount':
 			return FormatMoney(value);
