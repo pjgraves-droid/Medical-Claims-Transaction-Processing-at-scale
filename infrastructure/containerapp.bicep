@@ -16,9 +16,6 @@ param cosmosEndpoint string
 @description('OpenAI Endpoint')
 param openAiEndpoint string
 
-@description('OpenAI Key')
-param openAiKey string
-
 @description('OpenAI Completions deployment')
 param openAiCompletionsDeployment string
 
@@ -103,10 +100,6 @@ var containerAppConfigs = [
       {
         name: 'RulesEngine__OpenAIEndpoint'
         value: openAiEndpoint
-      }
-      {
-        name: 'RulesEngine__OpenAIKey'
-        value: openAiKey
       }
       {
         name: 'RulesEngine__OpenAICompletionsDeployment'

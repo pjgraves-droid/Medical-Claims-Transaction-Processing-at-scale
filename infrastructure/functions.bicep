@@ -115,10 +115,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           value: openAi.properties.endpoint
         }
         {
-          name: 'RulesEngine__OpenAIKey'
-          value: openAi.listKeys().key1
-        }
-        {
           name: 'RulesEngine__OpenAICompletionsDeployment'
           value: openAiDeployment
         }

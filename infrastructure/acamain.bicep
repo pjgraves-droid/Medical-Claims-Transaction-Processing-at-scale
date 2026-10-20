@@ -110,6 +110,15 @@ resource openAi 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {
   scope: resourceGroup(openAiRg)
 }
 
+module openAiRoles 'openai-role.bicep' = {
+  name: 'openAiRolesDeploy'
+  scope: resourceGroup(openAiRg)
+  params: {
+    openAiName: openAiName
+    principalIds: [apiIdentity.properties.principalId]
+  }
+}
+
 module containerApps 'containerapp.bicep' = {
   name: 'conatinerApps'
   params: {
@@ -122,7 +131,6 @@ module containerApps 'containerapp.bicep' = {
     name: appName
     openAiCompletionsDeployment: openAiDeployment
     openAiEndpoint: openAi.properties.endpoint
-    openAiKey: openAi.listKeys().key1
     suffix: suffix
     workerClientId: workerIdentity.properties.clientId
     apiClientId: apiIdentity.properties.clientId

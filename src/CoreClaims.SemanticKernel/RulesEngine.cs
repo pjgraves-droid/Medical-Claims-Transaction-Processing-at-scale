@@ -1,35 +1,44 @@
-﻿using CoreClaims.Infrastructure.Domain.Entities;
-using Microsoft.Extensions.Options;
-using Microsoft.SemanticKernel;
+using CoreClaims.Infrastructure.Domain.Entities;
+using Microsoft.Extensions.AI;
 using System.Text.Json;
-using System.Transactions;
 
 namespace CoreClaims.SemanticKernel
 {
     public class RulesEngine : IRulesEngine
     {
-        readonly RulesEngineSettings _settings;
-
-        public RulesEngine(
-            IOptions<RulesEngineSettings> settings )
+        private static readonly JsonSerializerOptions SerializerOptions = new()
         {
-            _settings = settings.Value;
+            WriteIndented = true,
+            MaxDepth = 20,
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+        };
+
+        private static readonly ChatOptions ReviewChatOptions = new()
+        {
+            MaxOutputTokens = 2000,
+            Temperature = 0.0f,
+        };
+
+        private readonly IChatClient _chatClient;
+
+        public RulesEngine(IChatClient chatClient)
+        {
+            _chatClient = chatClient;
         }
 
         public async Task<string> ReviewClaim(ClaimDetail claim)
         {
-            await Task.CompletedTask;
+            var claimData = JsonSerializer.Serialize(claim, SerializerOptions);
+            var prompt = PromptTemplate.Replace("{{claim}}", claimData);
 
-            var builder = new KernelBuilder();
+            var response = await _chatClient.GetResponseAsync(prompt, ReviewChatOptions);
 
-            builder.WithAzureChatCompletionService(
-                     _settings.OpenAICompletionsDeployment,
-                     _settings.OpenAIEndpoint,
-                     _settings.OpenAIKey);
+            return response.Text;
+        }
 
-            var kernel = builder.Build();
-
-            string skPrompt = @"
+        private const string PromptTemplate = @"
             You are an insurance claim review agent. You are provided data about a claim in JSON format and rules to evaluate the claim and classify it with a review result. 
             For a given claim you must specify one of the following results:
             - [No Action]
@@ -112,7 +121,7 @@ namespace CoreClaims.SemanticKernel
             +++
 
             [INPUT]
-            {{$claim}}
+            {{claim}}
             [END INPUT]
 
             Provide your response as completions to the following bullets replacing the values in square brackets, and do not include the claim context data in the response:
@@ -123,36 +132,5 @@ namespace CoreClaims.SemanticKernel
             - Reasoning:
                 [Your Review Result Reasoning]
             ";
-
-            var reviewer = kernel.CreateSemanticFunction(skPrompt, "review", "ReviewSkill", description: "Review the claim and make approval or denial recommendation.", maxTokens: 2000, temperature: 0.0);
-
-            JsonSerializerOptions ser_options = new()
-            {
-                WriteIndented = true,
-                MaxDepth = 20,
-                AllowTrailingCommas = true,
-                PropertyNameCaseInsensitive = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
-
-            string claimData = JsonSerializer.Serialize(claim, ser_options);
-
-            var context = kernel.CreateNewContext();
-            context["claim"] = claimData;
-
-            var response = await reviewer.InvokeAsync(context);
-
-            string result;
-            if (response.ErrorOccurred)
-            {
-                result = response.LastException.ToString();
-            }
-            else
-            {
-                result = response.Result;
-            }
-
-            return result;
-        }
     }
 }

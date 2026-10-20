@@ -28,7 +28,7 @@ Push-Location $sourceFolder
 
 if ($deployAks) {
     $script="aksmain.bicep"
-    $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --query "properties.provisioningState" -o tsv)
+    $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --parameters openAiName=$openAiName --parameters openAiRg=$openAiRg --query "properties.provisioningState" -o tsv)
 } else {
     $script="acamain.bicep"
     $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --parameters openAiName=$openAiName --parameters openAiDeployment=$openAiCompletionsDeployment --parameters openAiRg=$openAiRg --query "properties.provisioningState" -o tsv)

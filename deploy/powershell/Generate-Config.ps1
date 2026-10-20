@@ -69,7 +69,6 @@ Write-Host "App Insights Instrumentation Key: $appinsightsId" -ForegroundColor Y
 
 ## Getting OpenAI info
 $openAi=$(az cognitiveservices account list -g $openAiRg --query "[?kind=='OpenAI' && name=='$openAiName'].{name: name, kind:kind, endpoint: properties.endpoint}" -o json | ConvertFrom-Json)
-$openAiKey=$(az cognitiveservices account keys list -g $openAiRg -n $openAi.name -o json --query key1 | ConvertFrom-Json)
 $openAiDeployment = $openAiCompletionsDeployment
 
 $apiIdentityClientId=$(az identity show -g $resourceGroup -n mi-api-coreclaims-$suffix -o json | ConvertFrom-Json).clientId
@@ -86,7 +85,6 @@ $tokens.dataLakeEndpoint=$dataLakeEndpoint
 $tokens.dataLakeAccountName=$dataLakeAccountName
 $tokens.eventHubKey=$eventHubKey
 $tokens.openAiEndpoint=$openAi.endpoint
-$tokens.openAiKey=$openAiKey
 $tokens.openAiCompletionsDeployment=$openAiDeployment
 $tokens.apiClientId=$apiIdentityClientId
 $tokens.workerClientId=$workerIdentityClientId

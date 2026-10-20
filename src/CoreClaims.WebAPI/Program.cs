@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using CoreClaims.Infrastructure;
 using CoreClaims.Infrastructure.BusinessRules;
 using CoreClaims.Infrastructure.Events;
+using CoreClaims.Infrastructure.Identity;
 using CoreClaims.Infrastructure.Repository;
 using CoreClaims.SemanticKernel;
 using CoreClaims.WebAPI.Components;
@@ -10,7 +11,6 @@ using CoreClaims.WebAPI.Endpoints.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
-using Azure.Identity;
 
 namespace CoreClaims.WebAPI
 {
@@ -33,7 +33,6 @@ namespace CoreClaims.WebAPI
             //builder.Services.AddAuthorization();
 
             builder.Services.Configure<BusinessRuleOptions>(builder.Configuration.GetSection(nameof(BusinessRuleOptions)));
-            builder.Services.Configure<RulesEngineSettings>(builder.Configuration.GetSection("RulesEngine"));
             builder.Services.AddCors(policyBuilder =>
             {
                 policyBuilder.AddPolicy(allowAllCorsOrigins,
@@ -45,21 +44,12 @@ namespace CoreClaims.WebAPI
                     });
             });
 
+            var azureCredential = AzureCredentialFactory.Create(builder.Configuration[Constants.Identity.ClientId]);
+
             builder.Services.AddSingleton(s =>
             {
                 var endpoint = builder.Configuration[Constants.Connections.CosmosDbEndpoint];
-                var clientId = builder.Configuration[Constants.Identity.ClientId];
-
-#if DEBUG
-                var credential = new Azure.Identity.DefaultAzureCredential();
-#else
-    var credential = new ChainedTokenCredential(
-            new ManagedIdentityCredential(clientId),
-            new AzureCliCredential()
-        );
-#endif
-
-                return new CosmosClientBuilder(endpoint, credential)
+                return new CosmosClientBuilder(endpoint, azureCredential)
                     .Build();
             });
             builder.Services.AddSingleton<IEventHubService, EventHubService>(s => new EventHubService(
@@ -73,7 +63,7 @@ namespace CoreClaims.WebAPI
             builder.Services.AddSingleton<IProviderRepository, ProviderRepository>();
 
             builder.Services.AddSingleton<ICoreBusinessRule, CoreBusinessRule>();
-            builder.Services.AddSingleton<IRulesEngine, RulesEngine>();
+            builder.Services.AddRulesEngine(builder.Configuration, azureCredential);
 
             // Add Endpoint classes.
             builder.Services.AddScoped<EndpointsBase, AdjudicatorEndpoints>();

@@ -5,6 +5,12 @@ param suffix string = uniqueString(resourceGroup().id)
 @description('Location for resource deployment')
 param location string = resourceGroup().location
 
+@description('Existing Azure OpenAI account name (leave empty to skip the RBAC assignment)')
+param openAiName string = ''
+
+@description('OpenAI resource group')
+param openAiRg string = resourceGroup().name
+
 var appName = 'coreclaims-${suffix}'
 var serviceNames = {
   aks: replace('aks-${appName}', '-', '')
@@ -120,6 +126,15 @@ resource workerIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-0
       issuer: aks.outputs.aksOidcFedIdentityProperties.issuer
       subject: 'system:serviceaccount:default:claims-worker-sa'
     }
+  }
+}
+
+module openAiRoles 'openai-role.bicep' = if (!empty(openAiName)) {
+  name: 'openAiRolesDeploy'
+  scope: resourceGroup(openAiRg)
+  params: {
+    openAiName: openAiName
+    principalIds: [apiIdentity.properties.principalId]
   }
 }
 

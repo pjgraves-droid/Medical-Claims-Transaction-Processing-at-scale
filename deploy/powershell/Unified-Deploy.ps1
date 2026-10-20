@@ -82,8 +82,6 @@ if ($openAiName) {
     $openAiRg=$resourceGroup
 }
 
-$openAiKey=$(az cognitiveservices account keys list -g $openAiRg -n $openAi.name -o json --query key1 | ConvertFrom-Json)
-
 if ($stepDeployBicep) {
     & ./Deploy-Bicep.ps1 -resourceGroup $resourceGroup -location $location -suffix $suffix -openAiName $openAiName -openAiCompletionsDeployment $openAiCompletionsDeployment -openAiRg $openAiRg -deployAks $deployAks
 }
