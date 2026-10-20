@@ -1,6 +1,5 @@
 
 using System.Text.Json.Serialization;
-using Azure.Core.Serialization;
 using CoreClaims.Infrastructure;
 using CoreClaims.Infrastructure.BusinessRules;
 using CoreClaims.Infrastructure.Events;
@@ -11,8 +10,6 @@ using CoreClaims.WebAPI.Endpoints.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Azure.Identity;
 
 namespace CoreClaims.WebAPI
@@ -92,15 +89,14 @@ namespace CoreClaims.WebAPI
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapOpenApi();
+            }
 
             app.UseHttpsRedirection();
 
