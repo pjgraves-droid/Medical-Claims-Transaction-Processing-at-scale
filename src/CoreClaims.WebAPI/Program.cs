@@ -8,12 +8,14 @@ using CoreClaims.Infrastructure.Repository;
 using CoreClaims.SemanticKernel;
 using CoreClaims.WebAPI.Components;
 using CoreClaims.WebAPI.Endpoints.Http;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using OpenTelemetry.Resources;
 using Constants = CoreClaims.Infrastructure.Constants;
 
 namespace CoreClaims.WebAPI
@@ -29,11 +31,17 @@ namespace CoreClaims.WebAPI
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
-            //builder.Logging.AddApplicationInsights(
-            //    configureTelemetryConfiguration: (config) =>
-            //        config.ConnectionString = builder.Configuration.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING"),
-            //    configureApplicationInsightsLoggerOptions: (options) => { }
-            //);
+
+            // Emit Azure SDK (Cosmos DB, Event Hubs, OpenAI) spans as OpenTelemetry activities.
+            AppContext.SetSwitch("Azure.Experimental.EnableActivitySource", true);
+            var openTelemetry = builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService("CoreClaims.WebAPI"));
+            var aiConnectionString = builder.Configuration[Constants.Telemetry.ConnectionString]
+                ?? builder.Configuration[Constants.Telemetry.ConnectionStringEnvironmentVariable];
+            if (!string.IsNullOrWhiteSpace(aiConnectionString))
+            {
+                openTelemetry.UseAzureMonitor(options => options.ConnectionString = aiConnectionString);
+            }
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection(Constants.Identity.AzureAdSection));

@@ -30,6 +30,12 @@ namespace CoreClaims.Infrastructure
             public const string AzureAdSection = "AzureAd";
         }
 
+        public static class Telemetry
+        {
+            public const string ConnectionString = "ApplicationInsights:ConnectionString";
+            public const string ConnectionStringEnvironmentVariable = "APPLICATIONINSIGHTS_CONNECTION_STRING";
+        }
+
         public static class Cors
         {
             public const string AllowedOrigins = "Cors:AllowedOrigins";
