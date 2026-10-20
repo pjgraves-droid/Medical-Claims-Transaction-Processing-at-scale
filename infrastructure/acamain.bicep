@@ -11,6 +11,9 @@ param openAiName string = 'openai-coreclaims-${suffix}'
 @description('OpenAi Deployment')
 param openAiDeployment string = 'completions'
 
+@description('Client ID of the Entra ID app registration that protects the API (audience of incoming JWTs)')
+param apiAuthClientId string
+
 @description('OpenAI resource group')
 param openAiRg string = resourceGroup().name
 
@@ -125,8 +128,9 @@ module containerApps 'containerapp.bicep' = {
     aiConnectionString: logAnalytics.outputs.aiConnectionString
     cosmosEndpoint: cosmosDb.outputs.cosmosAccountEndpoint
     dataLakeAccountName: serviceNames.storage
-    laCustomerId: logAnalytics.outputs.laCustomerId
-    laSharedKey: logAnalytics.outputs.laSharedKey
+    logAnalyticsName: logAnalytics.outputs.laName
+    apiAuthClientId: apiAuthClientId
+    frontendOrigin: staticwebsite.outputs.staticWebsiteUrl
     location: location
     name: appName
     openAiCompletionsDeployment: openAiDeployment

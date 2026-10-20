@@ -8,18 +8,24 @@ using CoreClaims.Infrastructure.Repository;
 using CoreClaims.SemanticKernel;
 using CoreClaims.WebAPI.Components;
 using CoreClaims.WebAPI.Endpoints.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Web;
+using Constants = CoreClaims.Infrastructure.Constants;
 
 namespace CoreClaims.WebAPI
 {
     public class Program
     {
+        public const string FrontendCorsPolicy = "Frontend";
+        public const string HealthCheckPath = "/health";
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var allowAllCorsOrigins = "AllowAllOrigins";
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
@@ -29,19 +35,29 @@ namespace CoreClaims.WebAPI
             //    configureApplicationInsightsLoggerOptions: (options) => { }
             //);
 
-            // Add services to the container.
-            //builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection(Constants.Identity.AzureAdSection));
+
+            // Every endpoint requires an authenticated caller unless it explicitly opts out (health checks).
+            builder.Services.AddAuthorizationBuilder()
+                .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+
+            builder.Services.AddHealthChecks();
 
             builder.Services.Configure<BusinessRuleOptions>(builder.Configuration.GetSection(nameof(BusinessRuleOptions)));
-            builder.Services.AddCors(policyBuilder =>
+
+            var allowedOrigins = (builder.Configuration.GetSection(Constants.Cors.AllowedOrigins).Get<string[]>() ?? [])
+                .Where(o => !string.IsNullOrWhiteSpace(o))
+                .Select(o => o.Trim().TrimEnd('/'))
+                .ToArray();
+            builder.Services.AddCors(options =>
             {
-                policyBuilder.AddPolicy(allowAllCorsOrigins,
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin();
-                        policy.AllowAnyHeader();
-                        policy.AllowAnyMethod();
-                    });
+                options.AddPolicy(FrontendCorsPolicy, policy =>
+                {
+                    policy.WithOrigins(allowedOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
             });
 
             var azureCredential = AzureCredentialFactory.Create(builder.Configuration[Constants.Identity.ClientId]);
@@ -83,12 +99,18 @@ namespace CoreClaims.WebAPI
 
             var app = builder.Build();
 
+            app.UseHttpsRedirection();
+
+            app.UseCors(FrontendCorsPolicy);
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapHealthChecks(HealthCheckPath).AllowAnonymous();
+
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.MapOpenApi().AllowAnonymous();
             }
-
-            app.UseHttpsRedirection();
 
             // Map the REST endpoints:
             using (var scope = app.Services.CreateScope())
@@ -102,10 +124,6 @@ namespace CoreClaims.WebAPI
                     item.AddRoutes(app);
                 }
             }
-
-            app.UseCors(allowAllCorsOrigins);
-
-            //app.UseAuthorization();
 
             app.Run();
         }

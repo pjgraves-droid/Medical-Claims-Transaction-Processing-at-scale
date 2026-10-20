@@ -1,4 +1,4 @@
-﻿namespace CoreClaims.Infrastructure
+namespace CoreClaims.Infrastructure
 {
     public static class Constants
     {
@@ -27,6 +27,12 @@
         public static class Identity
         {
             public const string ClientId = "ClientId";
+            public const string AzureAdSection = "AzureAd";
+        }
+
+        public static class Cors
+        {
+            public const string AllowedOrigins = "Cors:AllowedOrigins";
         }
     }
 }

@@ -7,6 +7,7 @@ Param(
     [parameter(Mandatory={-not $deployAks})][string]$openAiName,
     [parameter(Mandatory={-not $deployAks})][string]$openAiCompletionsDeployment,
     [parameter(Mandatory={-not $deployAks})][string]$openAiRg,
+    [parameter(Mandatory={-not $deployAks})][string]$apiAuthClientId,
     [parameter(Mandatory=$true)][bool]$deployAks
 )
 
@@ -28,7 +29,7 @@ Push-Location $sourceFolder
 
 if ($deployAks) {
     $script="aksmain.bicep"
-    $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --parameters openAiName=$openAiName --parameters openAiRg=$openAiRg --query "properties.provisioningState" -o tsv)
+    $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --parameters openAiName=$openAiName --parameters openAiRg=$openAiRg --parameters apiAuthClientId=$apiAuthClientId --query "properties.provisioningState" -o tsv)
 } else {
     $script="acamain.bicep"
     $deploymentState = $(az deployment group create -g $resourceGroup --template-file $script --parameters suffix=$suffix --parameters openAiName=$openAiName --parameters openAiDeployment=$openAiCompletionsDeployment --parameters openAiRg=$openAiRg --query "properties.provisioningState" -o tsv)

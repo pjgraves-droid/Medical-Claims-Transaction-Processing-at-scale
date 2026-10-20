@@ -13,6 +13,11 @@ businessRuleOptions:
 rulesEngine:
   openAiEndpoint: "{{openAiEndpoint}}"
   openAiCompletionsDeployment: "{{openAiCompletionsDeployment}}"
+azureAd:
+  tenantId: "{{tenantId}}"
+  clientId: "{{apiAuthClientId}}"
+cors:
+  allowedOrigin: "{{frontendOrigin}}"
 azureWorkloadIdentity:
   apiClientId: {{apiClientId}}
   workerClientId: {{workerClientId}}
