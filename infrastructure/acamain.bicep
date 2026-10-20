@@ -11,6 +11,9 @@ param openAiName string = 'openai-coreclaims-${suffix}'
 @description('OpenAi Deployment')
 param openAiDeployment string = 'completions'
 
+@description('Client ID of the Entra ID app registration that protects the API (audience of incoming JWTs)')
+param apiAuthClientId string
+
 @description('OpenAI resource group')
 param openAiRg string = resourceGroup().name
 
@@ -110,19 +113,28 @@ resource openAi 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {
   scope: resourceGroup(openAiRg)
 }
 
+module openAiRoles 'openai-role.bicep' = {
+  name: 'openAiRolesDeploy'
+  scope: resourceGroup(openAiRg)
+  params: {
+    openAiName: openAiName
+    principalIds: [apiIdentity.properties.principalId]
+  }
+}
+
 module containerApps 'containerapp.bicep' = {
   name: 'conatinerApps'
   params: {
     aiConnectionString: logAnalytics.outputs.aiConnectionString
     cosmosEndpoint: cosmosDb.outputs.cosmosAccountEndpoint
     dataLakeAccountName: serviceNames.storage
-    laCustomerId: logAnalytics.outputs.laCustomerId
-    laSharedKey: logAnalytics.outputs.laSharedKey
+    logAnalyticsName: logAnalytics.outputs.laName
+    apiAuthClientId: apiAuthClientId
+    frontendOrigin: staticwebsite.outputs.staticWebsiteUrl
     location: location
     name: appName
     openAiCompletionsDeployment: openAiDeployment
     openAiEndpoint: openAi.properties.endpoint
-    openAiKey: openAi.listKeys().key1
     suffix: suffix
     workerClientId: workerIdentity.properties.clientId
     apiClientId: apiIdentity.properties.clientId

@@ -16,20 +16,23 @@ param cosmosEndpoint string
 @description('OpenAI Endpoint')
 param openAiEndpoint string
 
-@description('OpenAI Key')
-param openAiKey string
-
 @description('OpenAI Completions deployment')
 param openAiCompletionsDeployment string
 
 @description('App Insights connection string')
 param aiConnectionString string
 
-@description('Log Analytics Customer ID')
-param laCustomerId string
+@description('Log Analytics workspace name')
+param logAnalyticsName string
 
-@description('Log Analytics shared key')
-param laSharedKey string
+@description('Entra ID tenant that issues tokens for the API')
+param apiAuthTenantId string = tenant().tenantId
+
+@description('Client ID of the Entra ID app registration that protects the API')
+param apiAuthClientId string
+
+@description('Frontend origin allowed by the API CORS policy')
+param frontendOrigin string
 
 @description('API MI Client ID')
 param apiClientId string
@@ -105,10 +108,6 @@ var containerAppConfigs = [
         value: openAiEndpoint
       }
       {
-        name: 'RulesEngine__OpenAIKey'
-        value: openAiKey
-      }
-      {
         name: 'RulesEngine__OpenAICompletionsDeployment'
         value: openAiCompletionsDeployment
       }
@@ -123,6 +122,18 @@ var containerAppConfigs = [
       {
         name: 'ClientId'
         value: apiClientId
+      }
+      {
+        name: 'AzureAd__TenantId'
+        value: apiAuthTenantId
+      }
+      {
+        name: 'AzureAd__ClientId'
+        value: apiAuthClientId
+      }
+      {
+        name: 'Cors__AllowedOrigins__0'
+        value: frontendOrigin
       }
     ]
   }
@@ -225,6 +236,10 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
   }
 }
 
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+  name: logAnalyticsName
+}
+
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: 'acaenv-${name}'
   location: location
@@ -232,8 +247,8 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
-        customerId: laCustomerId
-        sharedKey: laSharedKey
+        customerId: logAnalytics.properties.customerId
+        sharedKey: logAnalytics.listKeys().primarySharedKey
       }
     }
     infrastructureResourceGroup: 'ME_${resourceGroup().name}'

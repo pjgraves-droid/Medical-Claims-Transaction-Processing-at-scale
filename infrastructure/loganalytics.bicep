@@ -40,5 +40,4 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 output aiConnectionString string = appInsights.properties.ConnectionString
-output laCustomerId string = logAnalytics.properties.customerId
-output laSharedKey string = logAnalytics.listKeys().primarySharedKey
+output laName string = logAnalytics.name

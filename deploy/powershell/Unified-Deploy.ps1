@@ -9,6 +9,7 @@ Param(
     [parameter(Mandatory=$false)][string]$openAiName=$null,
     [parameter(Mandatory=$false)][string]$openAiRg=$null,
     [parameter(Mandatory=$false)][string]$openAiCompletionsDeployment=$null,
+    [parameter(Mandatory=$true)][string]$apiAuthClientId,
     [parameter(Mandatory=$false)][bool]$deployAks=$false,
     [parameter(Mandatory=$false)][bool]$stepDeployOpenAi=$true,
     [parameter(Mandatory=$false)][bool]$stepDeployBicep=$true,
@@ -82,10 +83,8 @@ if ($openAiName) {
     $openAiRg=$resourceGroup
 }
 
-$openAiKey=$(az cognitiveservices account keys list -g $openAiRg -n $openAi.name -o json --query key1 | ConvertFrom-Json)
-
 if ($stepDeployBicep) {
-    & ./Deploy-Bicep.ps1 -resourceGroup $resourceGroup -location $location -suffix $suffix -openAiName $openAiName -openAiCompletionsDeployment $openAiCompletionsDeployment -openAiRg $openAiRg -deployAks $deployAks
+    & ./Deploy-Bicep.ps1 -resourceGroup $resourceGroup -location $location -suffix $suffix -openAiName $openAiName -openAiCompletionsDeployment $openAiCompletionsDeployment -openAiRg $openAiRg -apiAuthClientId $apiAuthClientId -deployAks $deployAks
 }
 
 if ($deployAks)
@@ -101,7 +100,7 @@ if ($deployAks)
 # Generate Config
 New-Item -ItemType Directory -Force -Path $(./Join-Path-Recursively.ps1 -pathParts ..,..,__values)
 $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts ..,..,__values,$gValuesFile)
-& ./Generate-Config.ps1 -resourceGroup $resourceGroup -suffix $suffix -outputFile $gValuesLocation -openAiName $openAiName -openAiCompletionsDeployment $openAiCompletionsDeployment -openAiRg $openAiRg -deployAks $deployAks
+& ./Generate-Config.ps1 -resourceGroup $resourceGroup -suffix $suffix -outputFile $gValuesLocation -openAiName $openAiName -openAiCompletionsDeployment $openAiCompletionsDeployment -openAiRg $openAiRg -apiAuthClientId $apiAuthClientId -deployAks $deployAks
 
 # Create Secrets
 if ([string]::IsNullOrEmpty($acrName))

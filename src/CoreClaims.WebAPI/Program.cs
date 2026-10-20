@@ -1,28 +1,31 @@
 
 using System.Text.Json.Serialization;
-using Azure.Core.Serialization;
 using CoreClaims.Infrastructure;
 using CoreClaims.Infrastructure.BusinessRules;
 using CoreClaims.Infrastructure.Events;
+using CoreClaims.Infrastructure.Identity;
 using CoreClaims.Infrastructure.Repository;
 using CoreClaims.SemanticKernel;
 using CoreClaims.WebAPI.Components;
 using CoreClaims.WebAPI.Endpoints.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using Azure.Identity;
+using Microsoft.Identity.Web;
+using Constants = CoreClaims.Infrastructure.Constants;
 
 namespace CoreClaims.WebAPI
 {
     public class Program
     {
+        public const string FrontendCorsPolicy = "Frontend";
+        public const string HealthCheckPath = "/health";
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var allowAllCorsOrigins = "AllowAllOrigins";
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
@@ -32,37 +35,37 @@ namespace CoreClaims.WebAPI
             //    configureApplicationInsightsLoggerOptions: (options) => { }
             //);
 
-            // Add services to the container.
-            //builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection(Constants.Identity.AzureAdSection));
+
+            // Every endpoint requires an authenticated caller unless it explicitly opts out (health checks).
+            builder.Services.AddAuthorizationBuilder()
+                .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+
+            builder.Services.AddHealthChecks();
 
             builder.Services.Configure<BusinessRuleOptions>(builder.Configuration.GetSection(nameof(BusinessRuleOptions)));
-            builder.Services.Configure<RulesEngineSettings>(builder.Configuration.GetSection("RulesEngine"));
-            builder.Services.AddCors(policyBuilder =>
+
+            var allowedOrigins = (builder.Configuration.GetSection(Constants.Cors.AllowedOrigins).Get<string[]>() ?? [])
+                .Where(o => !string.IsNullOrWhiteSpace(o))
+                .Select(o => o.Trim().TrimEnd('/'))
+                .ToArray();
+            builder.Services.AddCors(options =>
             {
-                policyBuilder.AddPolicy(allowAllCorsOrigins,
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin();
-                        policy.AllowAnyHeader();
-                        policy.AllowAnyMethod();
-                    });
+                options.AddPolicy(FrontendCorsPolicy, policy =>
+                {
+                    policy.WithOrigins(allowedOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
             });
+
+            var azureCredential = AzureCredentialFactory.Create(builder.Configuration[Constants.Identity.ClientId]);
 
             builder.Services.AddSingleton(s =>
             {
                 var endpoint = builder.Configuration[Constants.Connections.CosmosDbEndpoint];
-                var clientId = builder.Configuration[Constants.Identity.ClientId];
-
-#if DEBUG
-                var credential = new Azure.Identity.DefaultAzureCredential();
-#else
-    var credential = new ChainedTokenCredential(
-            new ManagedIdentityCredential(clientId),
-            new AzureCliCredential()
-        );
-#endif
-
-                return new CosmosClientBuilder(endpoint, credential)
+                return new CosmosClientBuilder(endpoint, azureCredential)
                     .Build();
             });
             builder.Services.AddSingleton<IEventHubService, EventHubService>(s => new EventHubService(
@@ -76,7 +79,7 @@ namespace CoreClaims.WebAPI
             builder.Services.AddSingleton<IProviderRepository, ProviderRepository>();
 
             builder.Services.AddSingleton<ICoreBusinessRule, CoreBusinessRule>();
-            builder.Services.AddSingleton<IRulesEngine, RulesEngine>();
+            builder.Services.AddRulesEngine(builder.Configuration, azureCredential);
 
             // Add Endpoint classes.
             builder.Services.AddScoped<EndpointsBase, AdjudicatorEndpoints>();
@@ -92,17 +95,22 @@ namespace CoreClaims.WebAPI
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
             app.UseHttpsRedirection();
+
+            app.UseCors(FrontendCorsPolicy);
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapHealthChecks(HealthCheckPath).AllowAnonymous();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapOpenApi().AllowAnonymous();
+            }
 
             // Map the REST endpoints:
             using (var scope = app.Services.CreateScope())
@@ -116,10 +124,6 @@ namespace CoreClaims.WebAPI
                     item.AddRoutes(app);
                 }
             }
-
-            app.UseCors(allowAllCorsOrigins);
-
-            //app.UseAuthorization();
 
             app.Run();
         }

@@ -21,3 +21,6 @@ data:
   RulesEngine__OpenAIEndpoint: {{ .Values.rulesEngine.openAiEndpoint }}
   RulesEngine__OpenAICompletionsDeployment: {{ .Values.rulesEngine.openAiCompletionsDeployment }}
   ClientId: {{ .Values.azureWorkloadIdentity.apiClientId }}
+  AzureAd__TenantId: {{ .Values.azureAd.tenantId | quote }}
+  AzureAd__ClientId: {{ .Values.azureAd.clientId | quote }}
+  Cors__AllowedOrigins__0: {{ .Values.cors.allowedOrigin | quote }}
