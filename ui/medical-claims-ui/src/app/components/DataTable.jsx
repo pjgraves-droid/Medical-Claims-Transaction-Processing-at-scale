@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Table, Pagination, Spinner } from 'flowbite-react';
+import { Table, Pagination, Spinner } from '~/app/components/ui';
 
 const paginationTheme = {
   pages: {

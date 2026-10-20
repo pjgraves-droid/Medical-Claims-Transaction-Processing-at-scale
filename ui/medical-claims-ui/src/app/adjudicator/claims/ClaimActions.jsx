@@ -63,8 +63,8 @@ export function DenyClaimButton ({ claimId, requestClaims, lineItems, setChangeD
 				{claimId}
 		
 				<label htmlFor="comments" className="block text-gray-700 text-sm font-bold mb-2 mt-5">Comments:</label>
-				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e)=> {setComment(event.target.value)} }
-					className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e) => setComment(e.target.value)}
+					className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline" />
 			</Modal>
 		</>
 	);
@@ -99,8 +99,8 @@ export function ProposeClaimButton ({ claimId, requestClaims, lineItems, setChan
 				{claimId}
 		
 				<label htmlFor="comments" className="block text-gray-700 text-sm font-bold mb-2 mt-5">Comments:</label>
-				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e)=> {setComment(event.target.value)} }
-					className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e) => setComment(e.target.value)}
+					className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline" />
 				
 			</Modal>
 		</>
@@ -136,8 +136,8 @@ export function ApproveClaimButton({ claimId, requestClaims, lineItems, setChang
 				{claimId}
 		
 				<label htmlFor="comments" className="block text-gray-700 text-sm font-bold mb-2 mt-5">Comments:</label>
-				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e)=> {setComment(event.target.value)} }
-					className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+				<textarea type="text" id="comments" name="comments" value={comment} onChange={(e) => setComment(e.target.value)}
+					className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline" />
 				
 			</Modal>
 		</>

@@ -1,6 +1,6 @@
 
-import moment from 'moment';
 import TransactionsStatement from '../hooks/TransactionsStatement';
+import { FormatDateValue } from '../hooks/Formatters';
 import Modal from '../components/modal';
 
 
@@ -18,9 +18,9 @@ export default function MemberCoverageModal({ memberId, showCoverageModal, setSh
 					{!coverageRequest.isLoading ? (
 						<div className="grid grid-cols-2">
 							<div>Start Date:</div>
-							<div>{ moment(coverageRequest.data.startDate).format('MMM DD, YYYY') }</div>
+							<div>{ FormatDateValue(coverageRequest.data.startDate, 'MMM dd, yyyy') }</div>
 							<div>End Date:</div>
-							<div>{ moment(coverageRequest.data.endDate).format('MMM DD, YYYY') }</div>						
+							<div>{ FormatDateValue(coverageRequest.data.endDate, 'MMM dd, yyyy') }</div>						
 						</div>
 					) : null}
 				</>

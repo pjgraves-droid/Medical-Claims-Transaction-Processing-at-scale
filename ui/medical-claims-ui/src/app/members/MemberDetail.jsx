@@ -1,6 +1,6 @@
 
 import TransactionsStatement from '../hooks/TransactionsStatement';
-import { Spinner } from 'flowbite-react';
+import { Spinner } from '~/app/components/ui';
 
 export default function MemberDetail({ memberId }) {
 	const { data, error, isLoading } = TransactionsStatement.GetMember(memberId);
@@ -13,7 +13,7 @@ export default function MemberDetail({ memberId }) {
 						<h4 className="card-title">Member Details for {data.firstName} {data.lastName}</h4>
 					</div>
 					<div className="card-body">
-						<div className="relative overflow-x-auto sm:rounded">
+						<div className="relative overflow-x-auto sm:rounded-sm">
 							<div className="grid grid-cols-2">
 								<div className="grid grid-cols-2">
 									<div className="px-4 font-bold gap-2">Title:</div><div>{data.title}</div>

@@ -2,11 +2,10 @@
 
 import react, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import moment from 'moment';
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import { FormatMoney } from '../../hooks/Formatters';
+import { FormatDateValue, FormatMoney } from '../../hooks/Formatters';
 
-import { Table, Spinner, Pagination, Modal, Textarea, Button } from 'flowbite-react';
+import { Table, Spinner, Pagination, Modal, Textarea, Button } from '~/app/components/ui';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { AcknowledgeButton, DenyClaimButton, ProposeClaimButton, ApproveClaimButton } from './ClaimActions';
 import DataTable from '../../components/DataTable';
@@ -31,7 +30,7 @@ export default function ClaimDetails({ claimId, requestClaims, isManager, setCha
 			<div className="card shadow-md">
 				<div className="card-header grid grid-cols-2">
 					<h4 className="card-title mb-2">Claim Details</h4>
-					<div className="text-right"><label>Filing Date: </label>{ moment(data.filingDate).format('MMMM DD, YYYY') }</div>
+					<div className="text-right"><label>Filing Date: </label>{ FormatDateValue(data.filingDate, 'MMMM dd, yyyy') }</div>
 					<div className="justify-end">
 						<Button color="dark" className="p-0" onClick={onClickRecommend}>
 							<SparklesIcon className="h-6 w-6 text-gray-500 mr-3 text-white" />
@@ -40,7 +39,7 @@ export default function ClaimDetails({ claimId, requestClaims, isManager, setCha
 					</div>
 				</div>
 				<div className="card-body">
-					<div className="relative overflow-x-auto sm:rounded">
+					<div className="relative overflow-x-auto sm:rounded-sm">
 						<div className="grid grid-cols-[auto_1fr] gap-x-8">
 							<div className="px-4 font-bold gap-2">Claim Id:</div>
 							<div className="float-left">{data.claimId}</div>
@@ -78,7 +77,7 @@ export default function ClaimDetails({ claimId, requestClaims, isManager, setCha
 const FormModal = ({ children, header, setOpenModal, openModal }) => {
 	return (
 		<Modal show={openModal} size="xxl" popup onClose={() => setOpenModal(false)} 
-			className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+			className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-hidden focus:outline-hidden">
 			<Modal.Header className="items-center py-2">{header}</Modal.Header>
 			<Modal.Body>{children}</Modal.Body>
 		</Modal>
@@ -167,7 +166,7 @@ function ClaimsActions({ claimStatus, claimId, requestClaims, lineItems, mutate,
 function formatValues(header, value, row) {
 	switch(header.key) {
 		case 'serviceDate':
-			return moment(value).format('YYYY-MM-DD');
+			return FormatDateValue(value, 'yyyy-MM-dd');
 			break;
 		case 'amount':
 		case 'discount':
@@ -245,16 +244,16 @@ const ApplyDiscount = ({ row, data, setLineItems }) => {
 			<span className="hover:cursor-pointer" onClick={()=> setOpenModal(true)}>Apply Discount</span>
 			<Modal show={openModal} size="xl" popup onClose={() => setOpenModal(false)} 
 				className="justify-center items-center flex overflow-x-hidden overflow-y-auto 
-				fixed inset-0 z-50 outline-none focus:outline-none"
+				fixed inset-0 z-50 outline-hidden focus:outline-hidden"
 			>
 				<Modal.Header className="items-center p-4">Apply Discount</Modal.Header>
 				<Modal.Body className="mt-10">
 					<input type="number" min="0" ref={dicountRef} onChange={(e)=>onChange(e)}
-						className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+						className="shadow-sm appearance-none border rounded-sm py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline" />
 				</Modal.Body>
 				<Modal.Footer>
 					<button
-						className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+						className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded-sm shadow-sm hover:shadow-lg outline-hidden focus:outline-hidden mr-1 mb-1 ease-linear transition-all duration-150"
 						type="button" onClick={onSave}>
 						Apply
 					</button>

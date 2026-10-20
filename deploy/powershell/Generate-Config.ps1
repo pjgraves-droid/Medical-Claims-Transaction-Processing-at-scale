@@ -9,6 +9,7 @@ Param(
     [parameter(Mandatory=$true)][string]$openAiRg=$null,
     [parameter(Mandatory=$true)][string]$openAiCompletionsDeployment="completions",
     [parameter(Mandatory=$false)][string]$apiAuthClientId="",
+    [parameter(Mandatory=$false)][string]$uiAuthClientId=$apiAuthClientId,
     [parameter(Mandatory=$true)][bool]$deployAks
 )
 
@@ -92,6 +93,7 @@ $tokens.apiClientId=$apiIdentityClientId
 $tokens.workerClientId=$workerIdentityClientId
 $tokens.tenantId=$tenantId
 $tokens.apiAuthClientId=$apiAuthClientId
+$tokens.uiAuthClientId=$uiAuthClientId
 $tokens.frontendOrigin=$frontendOrigin
 $tokens.aiConnectionString=$appinsightsConnectionString
 $tokens.apiUrl=$apiUrl
