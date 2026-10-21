@@ -16,4 +16,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.21" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="CoreClaims.Tests" />
+  </ItemGroup>
+
 </Project>

@@ -6,7 +6,7 @@ import { Table, Pagination, Spinner } from 'flowbite-react';
 import moment from 'moment';
 
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import scrollToElement from '../../hooks/scrollToElement';
+import scrollToElement from '../../hooks/ScrollToElement';
 import { FormatMoney } from '../../hooks/Formatters';
 import ClaimDetails from './ClaimDetails';
 import ClaimHistory from '../../member/claims/ClaimHistory';
