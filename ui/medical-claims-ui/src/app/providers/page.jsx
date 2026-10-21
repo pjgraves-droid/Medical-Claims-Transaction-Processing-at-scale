@@ -26,7 +26,7 @@ export default function Providers() {
 			</div>
 
 			<div className="card-body">
-				<div className="relative overflow-x-auto sm:rounded">
+				<div className="relative overflow-x-auto sm:rounded-sm">
 					<DataTable
 						isLoading={isLoading}
 						headers={tableHeaders}

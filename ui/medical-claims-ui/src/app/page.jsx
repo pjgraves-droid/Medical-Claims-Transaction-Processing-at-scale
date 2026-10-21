@@ -25,7 +25,7 @@ export default function Home() {
 					</h4>
 				</div>
 				<div className="card-body">
-					<div className="flex justify-between overflow-x-auto sm:rounded flex-col md:flex-row">
+					<div className="flex justify-between overflow-x-auto sm:rounded-sm flex-col md:flex-row">
 						<div className="flex-1 p-6">
 							<div className="flex justify-between">
 								<h1>Auto-Approve Threshold</h1>

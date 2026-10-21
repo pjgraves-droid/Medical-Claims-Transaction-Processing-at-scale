@@ -1,7 +1,9 @@
 
 import './assets/css/tailwind.css';
+import './tailwind.css';
 import './globals.scss';
 import Navbar from './components/navbar';
+import AuthProvider from './auth/AuthProvider';
 
 
 export const metadata = {
@@ -13,9 +15,11 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en" data-layout-mode="light">
 			<body>
-				<Navbar>
-					{ children }
-				</Navbar>
+				<AuthProvider>
+					<Navbar>
+						{ children }
+					</Navbar>
+				</AuthProvider>
 			</body>
 		</html>
 	);

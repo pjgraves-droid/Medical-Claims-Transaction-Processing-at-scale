@@ -2,23 +2,32 @@
 
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import axios from "axios";
+import { getAccessToken } from "../auth/msal";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL, //'https://fa-coreclaims-ios38n2l.azurewebsites.net/api',
-  X_FUNCTION_KEY = process.env.NEXT_PUBLIC_X_FUNCTION_KEY; //'-3VTIyOmv6Fj3cMi_kaVcwPHEr2nN8qM7ks4zNzdfzZ0AzFu8YepTw=='
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const fetcher = (url) =>
-  axios
-    .get(url, { headers: { "x-functions-key": X_FUNCTION_KEY } })
-    .then((res) => res.data);
+const request = async (url, { method = "GET", body } = {}) => {
+  const headers = { Accept: "application/json" };
+  const token = await getAccessToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
 
-const put = async (url, { arg }) =>
-  await axios.put(url, arg, { headers: { "x-functions-key": X_FUNCTION_KEY } });
+  const res = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
+  if (!res.ok) {
+    const error = new Error(`Request to ${url} failed with ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
+  const contentType = res.headers.get("content-type") ?? "";
+  if (res.status === 204) return null;
+  return contentType.includes("json") ? res.json() : res.text();
+};
 
-const post = async (url, { arg }) =>
-  await axios.post(url, arg, {
-    headers: { "x-functions-key": X_FUNCTION_KEY },
-  });
+const fetcher = (url) => request(url);
+
+const put = (url, { arg }) => request(url, { method: "PUT", body: arg });
+
+const post = (url, { arg }) => request(url, { method: "POST", body: arg });
 
 
 // Function to calculate the offset

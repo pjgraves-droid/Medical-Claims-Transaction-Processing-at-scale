@@ -4,9 +4,9 @@ import { useState } from 'react';
 import link from 'next/link';
 
 import TransactionsStatement from '../hooks/TransactionsStatement';
-import scrollToElement from '../hooks/scrollToElement';
+import scrollToElement from '../hooks/ScrollToElement';
 import { FormatMoney } from '../hooks/Formatters';
-import { Table } from 'flowbite-react';
+import { Table } from '~/app/components/ui';
 import MemberDetail from './MemberDetail';
 import MemberCoverageModal from './MemberCoverageModal';
 import ClaimList from '../member/claims/ClaimList';
@@ -73,7 +73,7 @@ export default function Members() {
 					<h4 className="card-title">Members</h4>
 				</div>
 				<div className="card-body">
-					<div className="relative overflow-x-auto sm:rounded">
+					<div className="relative overflow-x-auto sm:rounded-sm">
 						<DataTable
 							isLoading={isLoading}
 							headers={tableHeaders}
@@ -95,13 +95,13 @@ export default function Members() {
 							extraRowItems={
 								(row) => (
 									<>
-										<Table.Cell className="!p-4">
+										<Table.Cell className="p-4!">
 											<span className="hover:cursor-pointer" onClick={()=> onClickMemberDetail(row.memberId)}>Details</span>
 										</Table.Cell>
-										<Table.Cell className="!p-4">
+										<Table.Cell className="p-4!">
 											<span className="hover:cursor-pointer" onClick={()=> onClickMemberCoverage(row.memberId)}>View Coverage</span>
 										</Table.Cell>
-										<Table.Cell className="!p-4">
+										<Table.Cell className="p-4!">
 											<span className="hover:cursor-pointer" onClick={()=> onClickViewClaims(row.memberId)}>View Claims</span>
 										</Table.Cell>
 									</>

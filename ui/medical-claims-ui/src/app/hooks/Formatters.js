@@ -1,19 +1,27 @@
-import moment from 'moment';
+import { format, isValid, parse, parseISO } from 'date-fns';
+import { utc } from '@date-fns/utc';
+
+const toDate = (value) => (value instanceof Date ? value : typeof value === 'string' ? parseISO(value) : new Date(value));
+
+export const FormatDateValue = (value, pattern = 'yyyy-MM-dd') => {
+  const date = toDate(value);
+  return isValid(date) ? format(date, pattern) : 'Invalid date';
+};
 
 export const FormatDate = (dateString) => {
-  const formats = [
-    "YYYY-MM-DDTHH:mm:ssZ", // First format to try
-    "MM/DD/YYYY h:mm:ss A" // Second format to try
+  const parsers = [
+    (s) => parseISO(s, { in: utc }),
+    (s) => parse(s, 'MM/dd/yyyy h:mm:ss a', new Date(), { in: utc }),
   ];
 
-  for (const format of formats) {
-    const momentDate = moment.utc(dateString, format);
-    if (momentDate.isValid()) {
-      return momentDate.format('MMMM DD, YYYY hh:mm a');
+  for (const tryParse of parsers) {
+    const date = typeof dateString === 'string' ? tryParse(dateString) : null;
+    if (date && isValid(date)) {
+      return format(date, 'MMMM dd, yyyy hh:mm aaa', { in: utc });
     }
   }
 
-  return 'Invalid date'; // Return default value if parsing fails for all formats
+  return 'Invalid date';
 };
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -23,6 +31,7 @@ export const FormatMoney = (value) => {
 
 const Formatters = {
   FormatDate,
+  FormatDateValue,
   FormatMoney
 }
 

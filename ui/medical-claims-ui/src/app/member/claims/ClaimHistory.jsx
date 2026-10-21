@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-import moment from 'moment';
 
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import Formatters from '../../hooks/Formatters';
+import Formatters, { FormatDateValue } from '../../hooks/Formatters';
 import DataTable from '../../components/DataTable';
 
 
@@ -17,7 +16,7 @@ const tableHeaders = [
 function formatValues(header, value, row) {
 	switch(header.key) {
 		case 'serviceDate':
-			return moment(value).format('YYYY-MM-DD');
+			return FormatDateValue(value, 'yyyy-MM-dd');
 			break;
 		case 'amount':
 		case 'discount':
@@ -37,10 +36,10 @@ export default function ClaimHistory({ claimId }) {
 			<div className="card mt-10">
 				<div className="card-header grid grid-cols-2">
 					<h4 className="card-title">Claim History</h4>
-					<div className='text-right'><label>Filing Date: </label>{ moment(claimRequest.data.filingDate).format('MMMM DD, YYYY') }</div>
+					<div className='text-right'><label>Filing Date: </label>{ FormatDateValue(claimRequest.data.filingDate, 'MMMM dd, yyyy') }</div>
 				</div>
 				<div className="card-body">
-					<div className="relative overflow-x-auto sm:rounded">
+					<div className="relative overflow-x-auto sm:rounded-sm">
 						<div className="grid grid-cols-2">
 							<div>
 								<div className="grid grid-cols-2 w-9/12">
@@ -92,7 +91,7 @@ function HistoryItem({ data }) {
 	return (
 		<div className="card bg-gray-200 mt-1">
 			<div className="card-body">
-				<div className="relative overflow-x-auto sm:rounded">
+				<div className="relative overflow-x-auto sm:rounded-sm">
 					<div className="grid grid-cols-2">
 						<div>
 							<div className="grid grid-cols-2 w-9/12">
