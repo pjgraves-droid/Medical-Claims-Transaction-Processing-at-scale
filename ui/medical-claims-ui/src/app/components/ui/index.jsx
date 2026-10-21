@@ -76,7 +76,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className })
 				{pageWindow(currentPage, totalPages).map((p) => (
 					<li key={p}>
 						<button aria-current={p === currentPage ? 'page' : undefined} onClick={() => onPageChange(p)}
-							className={cx('mx-1 w-9 rounded-md py-2 leading-tight', p === currentPage ? 'bg-[#444444] text-white' : 'bg-gray-100 hover:bg-gray-200')}>
+							className={cx('mx-1 w-9 rounded-md py-2 leading-tight', p === currentPage ? 'bg-[#444444]! text-white!' : 'bg-gray-100 hover:bg-gray-200')}>
 							{p}
 						</button>
 					</li>

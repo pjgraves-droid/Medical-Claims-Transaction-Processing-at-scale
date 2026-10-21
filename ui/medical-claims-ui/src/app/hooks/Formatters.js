@@ -17,7 +17,7 @@ export const FormatDate = (dateString) => {
   for (const tryParse of parsers) {
     const date = typeof dateString === 'string' ? tryParse(dateString) : null;
     if (date && isValid(date)) {
-      return format(date, 'MMMM dd, yyyy hh:mm a', { in: utc });
+      return format(date, 'MMMM dd, yyyy hh:mm aaa', { in: utc });
     }
   }
 

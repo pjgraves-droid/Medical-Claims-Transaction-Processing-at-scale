@@ -27,7 +27,7 @@ function formatValues(header, value, row) {
 			return FormatDateValue(value, 'yyyy-MM-dd');
 			break;		
 		case 'lastAdjudicatedDate':
-			return value ? FormatDateValue(value, 'yyyy-MM-dd hh:mm a') : '-';
+			return value ? FormatDateValue(value, 'yyyy-MM-dd hh:mm aaa') : '-';
 			break;
 		case 'lastAmount':
 			return FormatMoney(value);
