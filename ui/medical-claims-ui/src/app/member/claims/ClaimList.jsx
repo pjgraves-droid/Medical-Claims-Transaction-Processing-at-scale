@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { Table } from 'flowbite-react';
 import TransactionsStatement from '../../hooks/TransactionsStatement';
-import scrollToElement from '../../hooks/scrollToElement';
+import scrollToElement from '../../hooks/ScrollToElement';
 import { FormatMoney } from '../../hooks/Formatters';
 import ClaimDetails from './ClaimDetails';
 import ClaimHistory from './ClaimHistory';
